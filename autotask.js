@@ -20,7 +20,7 @@ async function getWeatherData() {
     return roundedTemp;
   } catch(error) {
   console.error(error);
-    return -1;
+    return null;
   }
 }
 
@@ -29,7 +29,7 @@ exports.handler = async function(credentials) {
   const signer = new DefenderRelaySigner(credentials, provider, { speed: 'fast'});
   console.log(`Using relayer ${await signer.getAddress()}`);
   const temperature = await getWeatherData();
-  if(temperature == -1) {
+  if(temperature == null) {
   	return;
   } else {
       await main(signer, temperature);
