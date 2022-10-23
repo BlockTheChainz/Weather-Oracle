@@ -1,0 +1,65 @@
+// SPDX-License-Identifier: MIT
+pragma solidity *0.8.7;
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract Weather2 is Ownable {
+    address private relayer;
+
+    struct WeatherData {
+        int256 temperature;
+        uint8 decimals;
+        int256 lat;
+        int256 lon;
+    }
+
+    mapping(uint256 => WeatherData) weather;
+    uint256 public counter;
+
+    constructor(address _relayer) {
+        setRelayer(_relayer);
+    }
+
+    function updateWeatherData(WeatherData memory weatherData)
+        public
+        onlyRelayer
+    {
+        weather[counter] = weatherData;
+        counter++;
+    }
+
+    function getLatestWeather() public view returns (WeatherData memory) {
+        return weather[counter - 1];
+    }
+
+    function getWeather(uint256 index)
+        public
+        view
+        returns (WeatherData memory)
+    {
+        return weather[index];
+    }
+
+    function getLatestRoundedTemperature() public view returns (int256) {
+        return
+            weather[counter - 1].temperature /
+            int256(10**weather[counter - 1].decimals);
+    }
+
+    function getRelayer() public view returns (address) {
+        return relayer;
+    }
+
+    function setRelayer(address _relayer) public onlyOwner {
+        relayer = _relayer;
+    }
+
+    function _checkRelayer() internal view {
+        require(relayer == msg.sender, "Caller is not the relayer");
+    }
+
+    modifier onlyRelayer() {
+        _checkRelayer();
+        _;
+    }
+}
