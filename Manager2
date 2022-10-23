@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: MIT
+pragma solidity *0.8.7;
+
+import "./Weather2.sol";
+
+contract Manager2 {
+    address weatherOracle = address(0x3A1b7E3B58761c86dc09081a2d6E373A74fEa8aF);
+
+    function checkTemperature() public view returns (string memory) {
+        Weather weather = Weather(weatherOracle);
+        int256 temperature = weather.getLatestRoundedTemperature();
+        return formatTemperature(temperature);
+    }
+
+    function checkCurrentWeather() public view returns (Weather.WeatherData memory) {
+        Weather weather = Weather(weatherOracle);
+        Weather.WeatherData memory weatherData = weather.getLatestWeather();
+        return weatherData;
+    }
+
+    function checkWeather(uint256 index) public view returns (Weather.WeatherData memory) {
+        Weather weather = Weather(weatherOracle);
+        Weather.WeatherData memory weatherData = weather.getWeather(index);
+        return weatherData;
+    }
+
+    function formatTemperature(int256 temperature) internal pure returns(string memory) {
+        if (temperature < 0) {
+            return "freezing";
+        } else if (temperature <= 10) {
+            return "cold";
+        } else if (temperature <= 20) {
+            return "moderate";
+        } else if (temperature <= 30) {
+            return "hot";
+        } else if (temperature <= 40) {
+            return "burning";
+        } else {
+            return "Egipt";
+        }
+    }
+
+}
